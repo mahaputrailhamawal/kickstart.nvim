@@ -490,7 +490,7 @@ do
   vim.pack.add(telescope_plugins)
 
   -- See `:help telescope` and `:help telescope.setup()`
-  require('telescope').setup {
+  require('telescope').setup ({
     -- You can put your default mappings / updates / etc. in here
     --  All the info you're looking for is in `:help telescope.setup()`
     --
@@ -499,11 +499,16 @@ do
     --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
     --   },
     -- },
-    -- pickers = {}
+    pickers = {
+      find_files = {
+        hidden = true,
+        no_ignore = true
+      }
+    },
     extensions = {
       ['ui-select'] = { require('telescope.themes').get_dropdown() },
     },
-  }
+  })
 
   -- Enable Telescope extensions if they are installed
   pcall(require('telescope').load_extension, 'fzf')
@@ -513,7 +518,10 @@ do
   local builtin = require 'telescope.builtin'
   vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
   vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
-  vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+  vim.keymap.set('n', '<leader>sf', function()
+  require('telescope.builtin').find_files({ hidden = true, no_ignore = true })
+end, { desc = '[S]earch [F]iles' })
+  --vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
   vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
   vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
   vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
@@ -970,7 +978,7 @@ do
   -- require 'kickstart.plugins.indent_line'
   -- require 'kickstart.plugins.lint'
   -- require 'kickstart.plugins.autopairs'
-  -- require 'kickstart.plugins.neo-tree'
+     require 'kickstart.plugins.neo-tree'
   -- require 'kickstart.plugins.gitsigns' -- adds gitsigns recommended keymaps
 
   -- NOTE: You can add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
@@ -981,3 +989,17 @@ end
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+do
+  -- Add the official Amazon Q plugin
+  vim.pack.add { gh 'awslabs/amazonq.nvim' }
+
+  -- Initialize the plugin
+  require('amazonq').setup {
+    -- Authenticate with Amazon Q Free Tier using AWS Builder ID
+    -- (If you have a Pro subscription, replace this with your corporate SSO URL)
+    ssoStartUrl = 'https://view.awsapps.com/start', 
+  }
+
+  -- Optional: Set up a quick keymap to open the Q Chat (matches your Claude keymap style)
+  vim.keymap.set('n', '<leader>aq', '<cmd>AmazonQ<cr>', { desc = 'Toggle [A]mazon [Q]' })
+end
